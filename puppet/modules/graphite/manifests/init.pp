@@ -1,118 +1,3 @@
-Exec {
-    path => ["/usr/bin", "/usr/sbin", '/bin']
-}
-
-Exec["apt-get-update"] -> Package <| |>
-
-exec { "apt-get-update" :
-    command => "/usr/bin/apt-get update",
-    require => File["/etc/apt/preferences"]
-}
-
-file { "/etc/apt/preferences" :
-    content => "
-Package: *
-Pin: release a=stable
-Pin-Priority: 800
-
-Package: *
-Pin: release a=testing
-Pin-Priority: 750
-
-Package: *
-Pin: release a=unstable
-Pin-Priority: 650
-
-Package: *
-Pin: release a=oldstable
-Pin-Priority: 600
-
-Package: *
-Pin: release a=experimental
-Pin-Priority: 550
-",
-    ensure => present,
-}
-
-class statsd {
-
-   package { "nodejs" :
-     ensure => "present"
-   }
-
-   package { "statsd" :
-     provider => "dpkg",
-     source => "/vagrant/statsd_0.0.1_all.deb",
-     ensure => installed,
-     require => Package[nodejs],
-   }
-
-}
-
-class carbon {
-
- $build_dir = "/tmp"
-
- $carbon_url = "http://launchpad.net/graphite/0.9/0.9.9/+download/carbon-0.9.9.tar.gz"
-
- $carbon_loc = "$build_dir/carbon.tar.gz"
-
- include graphite
-
-  package { "python-twisted" :
-    ensure => latest
-  }
-
- file { "/etc/init.d/carbon" :
-   source => "/tmp/vagrant-puppet/manifests/files/carbon",
-   ensure => present
- }
-
- file { "/opt/graphite/conf/carbon.conf" :
-   source => "/tmp/vagrant-puppet/manifests/files/carbon.conf",
-   ensure => present,
-   notify => Service[carbon],
-   subscribe => Exec[install-carbon],
- }
-
- file { "/opt/graphite/conf/storage-schemas.conf" :
-   source => "/tmp/vagrant-puppet/manifests/files/storage-schemas.conf",
-   ensure => present,
-   notify => Service[carbon],
-   subscribe => Exec[install-carbon],
- }
-
- file { "/var/log/carbon" :
-   ensure => directory,
-   owner => www-data,
-   group => www-data,
- }
-
- service { carbon :
-    ensure => running,
-    require => File["/etc/init.d/carbon"]
- }
-
- exec { "download-graphite-carbon":
-   command => "wget -O $carbon_loc $carbon_url",
-   creates => "$carbon_loc"
- }
-
- exec { "unpack-carbon":
-   command => "tar -zxvf $carbon_loc",
-   cwd => $build_dir,
-   subscribe => Exec[download-graphite-carbon],
-   refreshonly => true,
- }
-
- exec { "install-carbon" :
-   command => "python setup.py install",
-   cwd => "$build_dir/carbon-0.9.9",
-   require => Exec[unpack-carbon],
-   creates => "/opt/graphite/bin/carbon-cache.py",
-  }
-}
-
 class graphite {
 
  $build_dir = "/tmp"
@@ -195,7 +80,7 @@ class graphite {
   }
 
   file { "/opt/graphite/webapp/graphite/local_settings.py" :
-    source => "/tmp/vagrant-puppet/manifests/files/local_settings.py",
+    source => "/tmp/vagrant-puppet/modules-0/graphite/files/local_settings.py",
     ensure => present,
     require => File["/opt/graphite/storage"]
  }
@@ -258,6 +143,3 @@ class graphite {
   }
 
 }
-
-include carbon
-include statsd
