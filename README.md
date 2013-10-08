@@ -1,14 +1,23 @@
-== statsd + graphite to go ==
+== Seyren-in-a-box ==
 
-provision a virtual machine with vagrant and puppet to play around with statsd and graphite
+Build seyren, graphite and statsd on a Vagrant box
 
-goodies:
+# Instructions
 
- * debian package for statsd (github.com/etsy) included 
- * port forwardings enabled
-  * graphite: http://localhost:8080/
-  * statsd: 8125:udp
+```bash
+git clone https://github.com/petems/seyren-in-a-box
+cd seyren-in-a-box
+vagrant up
+```
 
-TODO:
+# Graphite
 
- * put basebox somewhere public
+```bash
+open http://localhost:8080
+```
+
+# Seryen
+
+```bash
+open http://localhost:9090
+```

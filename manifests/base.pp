@@ -40,7 +40,6 @@ class statsd {
      ensure => "present"
    }
 
-   # for now
    package { "statsd" :
      provider => "dpkg",
      source => "/vagrant/statsd_0.0.1_all.deb",
