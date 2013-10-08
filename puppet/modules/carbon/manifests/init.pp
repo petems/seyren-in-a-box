@@ -39,7 +39,6 @@ class carbon {
 
  service { carbon :
     ensure  => running,
-    mode    => '0644',
     require => File["/etc/init.d/carbon"]
  }
 
