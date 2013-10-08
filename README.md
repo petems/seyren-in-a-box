@@ -1,6 +1,6 @@
-== Seyren-in-a-box ==
+# Seyren-in-a-box
 
-Build seyren, graphite and statsd on a Vagrant box
+Build seyren, graphite and statsd on a Vagrant box. Adapted from @Jimdo's [vagrant-statsd-graphite-puppet project](https://github.com/Jimdo/vagrant-statsd-graphite-puppet)
 
 # Instructions
 
