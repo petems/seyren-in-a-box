@@ -1,5 +1,6 @@
 Exec {
-    path => ["/usr/bin", "/usr/sbin", '/bin']
+  path      => ["/usr/bin", "/usr/sbin", '/bin'],
+  logoutput => on_failure,
 }
 
 Exec["apt-get-update"] -> Package <| |>
@@ -36,3 +37,12 @@ Pin-Priority: 550
 
 include carbon
 include statsd
+include mongodb
+
+mongodb::configure { $::rs_name:
+    arbiter => $::rs_arbiter,
+    useauth => $::mongo_auth,
+    #rest => true
+}
+
+include seyren

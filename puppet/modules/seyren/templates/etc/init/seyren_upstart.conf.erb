@@ -1,0 +1,34 @@
+<%
+appuser    = 'root'
+appgroup   = 'root'
+apphome    = '/opt/seyren/'
+jarname    = 'seyren-web/target/dependency/jetty-runner.jar'
+args       = "seyren-web/target/*.war"
+java_bin   = "/usr/lib/jvm/java-7-openjdk-amd64/bin/java"
+config 	   = "/opt/seyren/seyren_config.sh"
+-%>
+# upstart script for the  seyren application
+
+description     "(re)start seyren"
+
+start on runlevel [2345]
+stop on runlevel [06]
+respawn
+respawn limit 5 30
+
+env LANG=en_GB.UTF-8
+env USER=<%= appuser %>
+env GROUP=<%= appgroup %>
+env HOME=<%= apphome %>
+
+pre-start script
+        test -c /dev/null || { stop; exit 0; }
+end script
+
+script
+    exec start-stop-daemon  --start \
+                        --chuid $USER:$GROUP \
+                        --pidfile $HOME/seyren.pid -m \
+                        --chdir $HOME \
+                        --exec run_seyren.sh
+end script
