@@ -41,8 +41,7 @@ include mongodb
 
 mongodb::configure { $::rs_name:
     arbiter => $::rs_arbiter,
-    useauth => $::mongo_auth,
-    #rest => true
+    useauth => false,
 }
 
 include seyren

@@ -10,4 +10,12 @@ class seyren::config  {
     require =>  File['/opt/seyren'],
   }
 
+  file { '/etc/init/seyren.conf' :
+    ensure  => present,
+    mode    => '0740',
+    owner   => 'root',
+    group   => 'root',
+    content => template('seyren/etc/init/seyren_upstart.conf.erb'),
+  }
+
 }
